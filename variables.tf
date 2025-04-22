@@ -24,3 +24,18 @@ variable "project_apis" {
 variable "project_name" {
   type = string
 }
+
+variable "cloud_run_back_name" {
+  type = string
+}
+
+variable "cloud_run_front_name" {
+  type = string
+}
+
+variable "subnets" {
+  type = list(object({
+    ip_cidr_range = string
+    name          = string
+  }))
+}
