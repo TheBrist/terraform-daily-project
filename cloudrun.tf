@@ -3,8 +3,9 @@ module "backend_cloud_run" {
   project_id = module.project.id
   region     = var.region
   name       = var.cloud_run_back_name
+
   containers = {
-    storage-api = {
+    backend-api = {
       image = "${var.region}-docker.pkg.dev/${module.project.id}/${google_artifact_registry_repository.my_repo.repository_id}/express-backend:latest"
       env = {
         "DB_USER" = "postgres",
@@ -28,8 +29,36 @@ module "backend_cloud_run" {
     }
   }
 
-  custom_audiences = []
-
   service_account     = module.cloud_run_back_sa.email
+  deletion_protection = false
+}
+
+module "frontend_cloud_run" {
+  source = "./modules/cloud-run-v2"
+  project_id = module.project.id
+  region = var.region
+  name = var.cloud_run_front_name
+
+  containers = {
+    frontend = {
+      image = "${var.region}-docker.pkg.dev/${module.project.id}/${google_artifact_registry_repository.my_repo.repository_id}/react-frontend:latest"
+      env = {
+        "VITE_API_BASE" = "http://${module.backend_cloud_run.service_name}.${var.region}.svc.cluster.local/api"
+      }
+    }
+  }
+
+  ingress = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
+  vpc_connector_create = {
+    subnet = {
+      name = module.vpc.subnets["${var.region}/cr-front-vpc-connector"].name
+      project_id = module.project.id
+    }
+    throughput = {
+      max = 300
+      min = 200
+    }
+  }
+  
   deletion_protection = false
 }
