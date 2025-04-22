@@ -15,3 +15,17 @@ module "vpc" {
   } ]
 }
 
+module "firewall" {
+  source     = "./modules/net-vpc-firewall"
+  project_id = module.project.id
+  network    = module.vpc.name
+  
+  ingress_rules = {
+    allow-cloudrun-to-sql = {
+      description = "Allow backend cloudrun service to access sql database"
+      source_ranges = [ module.vpc.subnets["${var.region}/cr-back-vpc-connector"].ip_cidr_range ]
+      destination_ranges = [module.db.ip]
+      rules = [{protocol = "tcp", ports = [5432]}]
+    }
+  }
+}
