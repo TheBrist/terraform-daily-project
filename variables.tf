@@ -1,10 +1,10 @@
 variable "parent_folder_id" {
-  type = string
+  type    = string
   default = "715513075959"
 }
 
 variable "billing_account_id" {
-  type = string
+  type      = string
   sensitive = true
 }
 
@@ -13,12 +13,12 @@ variable "terraform_service_account_address" {
 }
 
 variable "region" {
-  type = string
+  type    = string
   default = "me-west1"
 }
 
 variable "project_apis" {
-  type = list(string) 
+  type = list(string)
 }
 
 variable "project_name" {
@@ -38,4 +38,12 @@ variable "subnets" {
     ip_cidr_range = string
     name          = string
   }))
+}
+
+variable "cloud_sql_cidr_range" {
+  type = string
+}
+
+variable "elb_cidr_range" {
+  type = string
 }
