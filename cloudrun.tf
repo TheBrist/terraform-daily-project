@@ -10,7 +10,7 @@ module "backend_cloud_run" {
       env = {
         "DB_USER" = "postgres",
         "DB_PASSWORD" = "postgres",
-        "DATABASE" = "daily-dashboard",
+        "DATABASE" = "postgres",
         "DB_PORT" = 5432
         "DB_HOST" = "10.60.0.3"
       }
@@ -59,16 +59,22 @@ module "frontend_cloud_run" {
   }
 
   ingress = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
-  vpc_connector_create = {
-    subnet = {
-      name = module.vpc.subnets["${var.region}/cr-front-vpc-connector"].name
-      project_id = module.project.id
-    }
-    throughput = {
-      max = 300
-      min = 200
+  revision = {
+    vpc_access = {
+      connector = module.backend_cloud_run.vpc_connector
+      egress = "PRIVATE_RANGES_ONLY"
     }
   }
+  # vpc_connector_create = {
+  #   subnet = {
+  #     name = module.vpc.subnets["${var.region}/cr-front-vpc-connector"].name
+  #     project_id = module.project.id
+  #   }
+  #   throughput = {
+  #     max = 300
+  #     min = 200
+  #   }
+  # }
   
   deletion_protection = false
 }
