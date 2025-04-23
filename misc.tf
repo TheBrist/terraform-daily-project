@@ -15,7 +15,19 @@ module "db" {
         private_network = module.vpc.self_link
       }
     }
+  } 
+
+  flags = {
+    "cloudsql.iam_authentication" = "on"
   }
+
+  users = {
+    (module.cloudsql_sa.email) = {
+      type = "CLOUD_IAM_SERVICE_ACCOUNT"
+    }
+  }
+
+
   name = "daily-dashboard"
   region = var.region
   database_version = "POSTGRES_13"
@@ -32,6 +44,18 @@ module "cloud_run_back_sa" {
   iam_project_roles = {
     "${module.project.id}" = [
       "roles/cloudsql.client"
+    ]
+  }
+}
+
+module "cloudsql_sa" {
+  source = "./modules/iam-service-account"
+  project_id = module.project.id
+  name = "cloudsql-sa"
+
+  iam_project_roles = {
+    "${module.project.id}" = [
+      "roles/storage.admin"
     ]
   }
 }

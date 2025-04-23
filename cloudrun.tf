@@ -10,10 +10,19 @@ module "backend_cloud_run" {
       env = {
         "DB_USER" = "postgres",
         "DB_PASSWORD" = "postgres",
-        "DATABASE_URL" = "daily_dashboard",
+        "DATABASE" = "daily-dashboard",
         "DB_PORT" = 5432
-        "DB_HOST" = "/cloudsql/${var.project_name}:${var.region}:${module.db.connection_name}"
+        "DB_HOST" = "10.60.0.3"
       }
+      volume_mounts = {
+        cloudsql = "/cloudsql"
+      }
+    }
+  }
+
+  volumes = {
+    "cloudsql" = {
+      cloud_sql_instances = [module.db.connection_name]
     }
   }
 
@@ -27,7 +36,8 @@ module "backend_cloud_run" {
         max = 300
         min = 200
     }
-  }
+  } 
+
 
   service_account     = module.cloud_run_back_sa.email
   deletion_protection = false
