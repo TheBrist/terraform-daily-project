@@ -1,6 +1,14 @@
-resource "google_artifact_registry_repository" "my_repo" {
+resource "google_artifact_registry_repository" "front" {
   location      = var.region
-  repository_id = "artifact-registry-repo"
+  repository_id = "front-repo"
+  description   = "docker repository"
+  format        = "DOCKER"
+  project       = module.project.id
+}
+
+resource "google_artifact_registry_repository" "back" {
+  location      = var.region
+  repository_id = "back-repo"
   description   = "docker repository"
   format        = "DOCKER"
   project       = module.project.id
@@ -44,6 +52,22 @@ module "cloud_run_back_sa" {
   iam_project_roles = {
     "${module.project.id}" = [
       "roles/cloudsql.client"
+    ]
+  }
+}
+
+module "github_sa" {
+  source     = "./modules/iam-service-account"
+  project_id = module.project.id
+  name       = "github-sa"
+
+  iam_project_roles = {
+    "${module.project.id}" = [
+      "roles/artifactregistry.repoAdmin",
+      "roles/run.admin",
+      "roles/iam.serviceAccountTokenCreator",
+      "roles/storage.admin",
+      "roles/iam.serviceAccountUser",
     ]
   }
 }

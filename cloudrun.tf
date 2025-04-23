@@ -6,7 +6,7 @@ module "backend_cloud_run" {
 
   containers = {
     backend-api = {
-      image = "${var.region}-docker.pkg.dev/${module.project.id}/${google_artifact_registry_repository.my_repo.repository_id}/express-backend:latest"
+      image = "${var.region}-docker.pkg.dev/${module.project.id}/${google_artifact_registry_repository.back.repository_id}/express-backend:latest"
       env = {
         "DB_USER" = "postgres",
         "DB_PASSWORD" = "postgres",
@@ -51,9 +51,9 @@ module "frontend_cloud_run" {
 
   containers = {
     frontend = {
-      image = "${var.region}-docker.pkg.dev/${module.project.id}/${google_artifact_registry_repository.my_repo.repository_id}/react-frontend:latest"
+      image = "${var.region}-docker.pkg.dev/${module.project.id}/${google_artifact_registry_repository.front.repository_id}/react-frontend:latest"
       env = {
-        "VITE_API_BASE" = "http://${module.backend_cloud_run.service_name}.${var.region}.svc.cluster.local/api"
+        "VITE_API_BASE" = module.backend_cloud_run.service_name
       }
     }
   }
@@ -62,7 +62,7 @@ module "frontend_cloud_run" {
   revision = {
     vpc_access = {
       connector = module.backend_cloud_run.vpc_connector
-      egress = "PRIVATE_RANGES_ONLY"
+      egress = "ALL_TRAFFIC"
     }
   }
   # vpc_connector_create = {
