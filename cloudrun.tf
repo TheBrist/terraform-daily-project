@@ -65,16 +65,6 @@ module "frontend_cloud_run" {
       egress = "ALL_TRAFFIC"
     }
   }
-  # vpc_connector_create = {
-  #   subnet = {
-  #     name = module.vpc.subnets["${var.region}/cr-front-vpc-connector"].name
-  #     project_id = module.project.id
-  #   }
-  #   throughput = {
-  #     max = 300
-  #     min = 200
-  #   }
-  # }
   
   deletion_protection = false
 }

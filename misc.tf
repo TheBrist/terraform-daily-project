@@ -15,7 +15,7 @@ resource "google_artifact_registry_repository" "back" {
 }
 
 module "db" {
-  source = "./modules/cloudsql-instance"
+  source     = "./modules/cloudsql-instance"
   project_id = module.project.id
   network_config = {
     connectivity = {
@@ -23,7 +23,7 @@ module "db" {
         private_network = module.vpc.self_link
       }
     }
-  } 
+  }
 
   flags = {
     "cloudsql.iam_authentication" = "on"
@@ -35,51 +35,10 @@ module "db" {
     }
   }
 
-
-  name = "daily-dashboard"
-  region = var.region
-  database_version = "POSTGRES_13"
-  tier = "db-g1-small"
-  gcp_deletion_protection = true
+  name                          = "daily-dashboard"
+  region                        = var.region
+  database_version              = "POSTGRES_13"
+  tier                          = "db-g1-small"
+  gcp_deletion_protection       = true
   terraform_deletion_protection = false
-}
-
-module "cloud_run_back_sa" {
-  source     = "./modules/iam-service-account"
-  project_id = module.project.id
-  name       = "cloudrun-back-sa"
-
-  iam_project_roles = {
-    "${module.project.id}" = [
-      "roles/cloudsql.client"
-    ]
-  }
-}
-
-module "github_sa" {
-  source     = "./modules/iam-service-account"
-  project_id = module.project.id
-  name       = "github-sa"
-
-  iam_project_roles = {
-    "${module.project.id}" = [
-      "roles/artifactregistry.repoAdmin",
-      "roles/run.admin",
-      "roles/iam.serviceAccountTokenCreator",
-      "roles/storage.admin",
-      "roles/iam.serviceAccountUser",
-    ]
-  }
-}
-
-module "cloudsql_sa" {
-  source = "./modules/iam-service-account"
-  project_id = module.project.id
-  name = "cloudsql-sa"
-
-  iam_project_roles = {
-    "${module.project.id}" = [
-      "roles/storage.admin"
-    ]
-  }
 }

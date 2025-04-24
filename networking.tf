@@ -19,7 +19,7 @@ module "vpc" {
       ip_cidr_range = var.elb_cidr_range
       name          = "subnet-exl"
       region        = var.region
-    }
+    },
   ]
 }
 
@@ -76,11 +76,41 @@ module "external-lb" {
       }
     }
   }
-  #   ssl_certificates = {
-  #     create_configs = {
-  #       external-lba = {
-  #         certificate = tls_self_signed_cert.default.cert_pem
-  #         private_key = tls_private_key.default.private_key_pem
-  #       }
-  #   } }
+
+  ssl_certificates = {
+    create_configs = {
+      external-lba = {
+        certificate = tls_self_signed_cert.default.cert_pem
+        private_key = tls_private_key.default.private_key_pem
+      }
+  } }
+}
+
+resource "tls_private_key" "default" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "tls_self_signed_cert" "default" {
+  private_key_pem = tls_private_key.default.private_key_pem
+
+  is_ca_certificate = true
+
+  subject {
+    common_name = module.addresses.external_addresses["elb"].address
+    country     = "IL"
+    province    = "PT"
+    locality    = "PetahTikva"
+  }
+
+  validity_period_hours = 43800
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+    "digital_signature",
+    "cert_signing",
+    "crl_signing",
+  ]
 }
