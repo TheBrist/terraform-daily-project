@@ -13,6 +13,7 @@ module "backend_cloud_run" {
         "DATABASE" = "postgres",
         "DB_PORT" = 5432
         "DB_HOST" = "10.60.0.3"
+        "JWT_SECRET" = "yeskin"
       }
       volume_mounts = {
         cloudsql = "/cloudsql"

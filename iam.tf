@@ -4,8 +4,22 @@ module "github_sa" {
   name         = "gh-runner"
   display_name = "Github Runner Service Account"
 
+  iam_project_roles = {
+    "${module.project.id}" = [
+      "roles/owner",
+      "roles/appengine.appAdmin",
+      "roles/run.admin"
+    ]
+  }
+
   iam = {
-    "roles/iam.workloadIdentityUser" = ["principalSet://iam.googleapis.com/projects/${module.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.pool.workload_identity_pool_id}/attribute.repository/TheBrist/Daily-cards-project", ]
+    "roles/iam.serviceAccountUser" = [
+      "serviceAccount:${module.github_sa.email}",
+      "serviceAccount:${module.project.number}-compute@developer.gserviceaccount.com"
+    ],
+    "roles/iam.workloadIdentityUser" = [
+      "principalSet://iam.googleapis.com/projects/${module.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.pool.workload_identity_pool_id}/attribute.repository/TheBrist/Daily-cards-project"
+    ]
   }
 }
 
