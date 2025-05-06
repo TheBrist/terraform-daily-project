@@ -6,7 +6,7 @@ module "backend_cloud_run" {
 
   containers = {
     backend-api = {
-      image = "${var.region}-docker.pkg.dev/${module.project.id}/${google_artifact_registry_repository.back.repository_id}/express-backend:latest"
+      image = "${var.region}-docker.pkg.dev/${module.project.id}/${module.back_registry.id}/backend:latest"
       env = {
         "DB_USER" = "postgres",
         "DB_PASSWORD" = "postgres",
@@ -28,16 +28,16 @@ module "backend_cloud_run" {
   }
 
   ingress = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
-  vpc_connector_create = {
-    subnet = {
-      name = module.vpc.subnets["${var.region}/cr-back-vpc-connector"].name
-      project_id = module.project.id
-    }
-    throughput = {
-        max = 300
-        min = 200
-    }
-  } 
+  # vpc_connector_create = {
+  #   subnet = {
+  #     name = module.vpc.subnets["${var.region}/cr-back-vpc-connector"].name
+  #     project_id = module.project.id
+  #   }
+  #   throughput = {
+  #       max = 300
+  #       min = 200
+  #   }
+  # } 
 
 
   service_account     = module.cloud_run_back_sa.email
@@ -52,7 +52,7 @@ module "frontend_cloud_run" {
 
   containers = {
     frontend = {
-      image = "${var.region}-docker.pkg.dev/${module.project.id}/${google_artifact_registry_repository.front.repository_id}/react-frontend:latest"
+      image = "${var.region}-docker.pkg.dev/${module.project.id}/${module.front_registry.id}/frontend:latest"
       env = {
         "VITE_API_BASE" = module.backend_cloud_run.service_name
       }
@@ -60,12 +60,6 @@ module "frontend_cloud_run" {
   }
 
   ingress = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
-  revision = {
-    vpc_access = {
-      connector = module.backend_cloud_run.vpc_connector
-      egress = "ALL_TRAFFIC"
-    }
-  }
   
   deletion_protection = false
 }
