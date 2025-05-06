@@ -57,15 +57,23 @@ module "external-lb" {
   region     = var.region
   address    = module.addresses.external_addresses["elb"].id
   backend_service_configs = {
-    default = {
+    frontend-cloudrun = {
       backends = [
         { backend = "neg-0" }
       ]
-      health_checks = []
+      health_checks        = []
+      health_check_configs = {}
+    }
+    backend-cloudrun = {
+      backends = [
+        { backend = "neg-1" }
+      ]
+      health_checks        = []
+      health_check_configs = {}
+
     }
   }
 
-  health_check_configs = {}
   neg_configs = {
     neg-0 = {
       cloudrun = {
@@ -75,6 +83,39 @@ module "external-lb" {
         }
       }
     }
+    neg-1 = {
+      cloudrun = {
+        region = var.region
+        target_service = {
+          name = module.backend_cloud_run.service_name
+        }
+      }
+    }
+  }
+
+  health_check_configs = {}
+
+  urlmap_config = {
+    default_service = "frontend"
+    path_matchers = {
+      main = {
+        default_service = "frontend"
+        path_rules = [
+          {
+            paths = [
+              "/api", "/api/*"
+            ]
+            service = "backend"
+          }
+        ]
+      }
+    }
+    host_rules = [
+      {
+        hosts        = ["*"]
+        path_matcher = "main"
+      }
+    ]
   }
 
   ssl_certificates = {
@@ -86,31 +127,32 @@ module "external-lb" {
   } }
 }
 
-resource "tls_private_key" "default" {
-  algorithm = "RSA"
-  rsa_bits  = 2048
-}
+resource "google_compute_region_security_policy" "israel_only_policy" {
+  name        = "allow-only-israel"
+  description = "Allow requests only from Israel"
+  project     = module.project.id
+  type        = "CLOUD_ARMOR"
 
-resource "tls_self_signed_cert" "default" {
-  private_key_pem = tls_private_key.default.private_key_pem
-
-  is_ca_certificate = true
-
-  subject {
-    common_name = module.addresses.external_addresses["elb"].address
-    country     = "IL"
-    province    = "PT"
-    locality    = "PetahTikva"
+  rules {
+    action   = "allow"
+    priority = 1000
+    match {
+      expr {
+        expression = "origin.region_code=='AU'"
+      }
+    }
+    description = "Allow only requests from Israel"
   }
 
-  validity_period_hours = 43800
-
-  allowed_uses = [
-    "key_encipherment",
-    "digital_signature",
-    "server_auth",
-    "digital_signature",
-    "cert_signing",
-    "crl_signing",
-  ]
+  rules {
+    action   = "deny(403)"
+    priority = 2147483647
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+    description = "Deny all other traffic (default rule)"
+  }
 }

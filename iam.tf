@@ -71,3 +71,32 @@ resource "google_iam_workload_identity_pool_provider" "main" {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }
 }
+
+resource "tls_private_key" "default" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "tls_self_signed_cert" "default" {
+  private_key_pem = tls_private_key.default.private_key_pem
+
+  is_ca_certificate = true
+
+  subject {
+    common_name = module.addresses.external_addresses["elb"].address
+    country     = "IL"
+    province    = "PT"
+    locality    = "PetahTikva"
+  }
+
+  validity_period_hours = 43800
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+    "digital_signature",
+    "cert_signing",
+    "crl_signing",
+  ]
+}
