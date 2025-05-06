@@ -1,17 +1,17 @@
-resource "google_artifact_registry_repository" "front" {
-  location      = var.region
-  repository_id = "front-repo"
-  description   = "docker repository"
-  format        = "DOCKER"
-  project       = module.project.id
+module "front_registry" {
+  source     = "./modules/artifact-registry"
+  project_id = module.project.id
+  location   = var.region
+  name       = "front-repo"
+  format     = { docker = { standard = {} } }
 }
 
-resource "google_artifact_registry_repository" "back" {
-  location      = var.region
-  repository_id = "back-repo"
-  description   = "docker repository"
-  format        = "DOCKER"
-  project       = module.project.id
+module "back_registry" {
+  source     = "./modules/artifact-registry"
+  project_id = module.project.id
+  location   = var.region
+  name       = "back-repo"
+  format     = { docker = { standard = {} } }
 }
 
 module "db" {
