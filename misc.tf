@@ -42,3 +42,23 @@ module "db" {
   gcp_deletion_protection       = true
   terraform_deletion_protection = false
 }
+
+module "secret_manager" {
+  source = "./modules/secret-manager"
+  project_id = module.project.id
+  secrets = {
+    jwt-secret = {
+      locations = [var.region]
+    }
+  }
+  versions = {
+    jwt-secret = {
+      v1 = {enabled = true, data = random_string.jwt_secret.result}
+    }
+  }
+}
+
+resource "random_string" "jwt_secret" {
+  length           = 16
+  special          = true
+}

@@ -8,12 +8,12 @@ module "backend_cloud_run" {
     backend-api = {
       image = "${var.region}-docker.pkg.dev/${module.project.id}/${module.back_registry.name}/backend:latest"
       env = {
-        "DB_USER" = "postgres",
+        "DB_USER"     = "postgres",
         "DB_PASSWORD" = "postgres",
-        "DATABASE" = "postgres",
-        "DB_PORT" = 5432
-        "DB_HOST" = "10.60.0.3"
-        "JWT_SECRET" = "yeskin"
+        "DATABASE"    = "postgres",
+        "DB_PORT"     = 5432
+        "DB_HOST"     = module.db.ip
+        "JWT_SECRET"  = data.google_secret_manager_secret_version.jwt_secret.secret_data
       }
       volume_mounts = {
         cloudsql = "/cloudsql"
@@ -30,7 +30,7 @@ module "backend_cloud_run" {
   ingress = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
   revision = {
     gen2_execution_environment = true
-    max_instance_count = 20
+    max_instance_count         = 20
     vpc_access = {
       egress = "ALL_TRAFFIC"
       subnet = module.vpc.subnets["${var.region}/backend-cloudrun"].name
@@ -42,10 +42,10 @@ module "backend_cloud_run" {
 }
 
 module "frontend_cloud_run" {
-  source = "./modules/cloud-run-v2"
+  source     = "./modules/cloud-run-v2"
   project_id = module.project.id
-  region = var.region
-  name = var.cloud_run_front_name
+  region     = var.region
+  name       = var.cloud_run_front_name
 
   containers = {
     frontend = {
@@ -55,8 +55,13 @@ module "frontend_cloud_run" {
       }
     }
   }
-  
+
   ingress = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
-  
+
   deletion_protection = false
+}
+
+data "google_secret_manager_secret_version" "jwt_secret" {
+  secret  = "jwt-secret"
+  project = module.project.id
 }
