@@ -31,7 +31,7 @@ module "firewall" {
   ingress_rules = {
     allow-cloudrun-to-sql = {
       description        = "Allow backend cloudrun service to access sql database"
-      source_ranges      = [module.vpc.subnets["${var.region}/cr-back-vpc-connector"].ip_cidr_range]
+      source_ranges      = [module.vpc.subnets["${var.region}/backend-cloudrun"].ip_cidr_range]
       destination_ranges = [module.db.ip]
       rules              = [{ protocol = "tcp", ports = [5432] }]
     }
@@ -57,14 +57,14 @@ module "external-lb" {
   region     = var.region
   address    = module.addresses.external_addresses["elb"].id
   backend_service_configs = {
-    frontend-cloudrun = {
+    frontend = {
       backends = [
         { backend = "neg-0" }
       ]
       health_checks        = []
       health_check_configs = {}
     }
-    backend-cloudrun = {
+    backend = {
       backends = [
         { backend = "neg-1" }
       ]
@@ -118,13 +118,13 @@ module "external-lb" {
     ]
   }
 
-  ssl_certificates = {
-    create_configs = {
-      external-lba = {
-        certificate = tls_self_signed_cert.default.cert_pem
-        private_key = tls_private_key.default.private_key_pem
-      }
-  } }
+  # ssl_certificates = {
+  #   create_configs = {
+  #     external-lba = {
+  #       certificate = tls_self_signed_cert.default.cert_pem
+  #       private_key = tls_private_key.default.private_key_pem
+  #     }
+  # } }
 }
 
 resource "google_compute_region_security_policy" "israel_only_policy" {
