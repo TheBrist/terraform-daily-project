@@ -4,10 +4,3 @@ module "terraform_remote_State" {
   name = "tfstate-daily-project"
   location = var.region
 }
-
-module "cloud_sql_query" {
-  source = "./modules/gcs"
-  project_id = module.project.id
-  name = "postgres-query"
-  location = var.region
-}
