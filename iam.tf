@@ -4,7 +4,7 @@ module "github_sa" {
   name         = "gh-runner"
   display_name = "Github Runner Service Account"
 
-  iam_project_roles = {
+  iam_folder_roles = {
     "${module.project.id}" = [
       "roles/owner",
       "roles/appengine.appAdmin",
@@ -17,9 +17,11 @@ module "github_sa" {
       "serviceAccount:${module.github_sa.email}",
       "serviceAccount:${module.project.number}-compute@developer.gserviceaccount.com"
     ],
-    "roles/iam.workloadIdentityUser" = [
-      "principalSet://iam.googleapis.com/projects/${module.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.pool.workload_identity_pool_id}/attribute.repository/TheBrist/Daily-cards-project"
+    "roles/iam.serviceAccountTokenCreator" = [
+      "principalSet://iam.googleapis.com/projects/${module.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.pool.workload_identity_pool_id}/attribute.repository/TheBrist/Daily-cards-project",
+      "principalSet://iam.googleapis.com/projects/${module.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.terraform_pool.workload_identity_pool_id}/attribute.repository/TheBrist/terraform-daily-project"
     ]
+
   }
 }
 
@@ -53,6 +55,13 @@ resource "google_iam_workload_identity_pool" "pool" {
   project                   = module.project.id
 }
 
+
+resource "google_iam_workload_identity_pool" "terraform_pool" {
+  workload_identity_pool_id = "terraform-pool"
+  display_name              = "Terraform access"
+  project                   = module.project.id
+}
+
 resource "google_iam_workload_identity_pool_provider" "main" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.pool.workload_identity_pool_id
   workload_identity_pool_provider_id = "github-actions"
@@ -67,6 +76,24 @@ resource "google_iam_workload_identity_pool_provider" "main" {
     "attribute.ref"        = "assertion.ref"
   }
   attribute_condition = "attribute.repository == 'TheBrist/Daily-cards-project'"
+  oidc {
+    issuer_uri = "https://token.actions.githubusercontent.com"
+  }
+}
+
+resource "google_iam_workload_identity_pool_provider" "terraform" {
+  workload_identity_pool_id          = google_iam_workload_identity_pool.terraform_pool.workload_identity_pool_id
+  workload_identity_pool_provider_id = "terraform"
+  project                            = module.project.id
+  display_name                       = "Terraform"
+  attribute_mapping = {
+    "google.subject"       = "assertion.sub"
+    "attribute.actor"      = "assertion.actor"
+    "attribute.aud"        = "assertion.aud"
+    "attribute.repository" = "assertion.repository"
+    "attribute.ref"        = "assertion.ref"
+  }
+  attribute_condition = "attribute.repository == 'TheBrist/terraform-daily-project'"
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }
