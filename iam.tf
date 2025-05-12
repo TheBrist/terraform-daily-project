@@ -24,8 +24,8 @@ module "github_sa" {
       "serviceAccount:${module.project.number}-compute@developer.gserviceaccount.com"
     ],
     "roles/iam.serviceAccountTokenCreator" = [
-      "principalSet://iam.googleapis.com/projects/${module.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.pool.workload_identity_pool_id}/attribute.repository/TheBrist/Daily-cards-project",
-      "principalSet://iam.googleapis.com/projects/${module.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.terraform_pool.workload_identity_pool_id}/attribute.repository/TheBrist/terraform-daily-project"
+      "principalSet://iam.googleapis.com/projects/${module.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.gh.workload_identity_pool_id}/attribute.repository/TheBrist/Daily-cards-project",
+      "principalSet://iam.googleapis.com/projects/${module.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.tf.workload_identity_pool_id}/attribute.repository/TheBrist/terraform-daily-project"
     ]
 
   }
@@ -55,8 +55,8 @@ module "cloud_run_back_sa" {
   }
 }
 
-resource "google_iam_workload_identity_pool" "pool" {
-  workload_identity_pool_id = "cloudrun-access"
+resource "google_iam_workload_identity_pool" "gh" {
+  workload_identity_pool_id = "cr-access"
   display_name              = "Cloud run access"
   project                   = module.project.id
 
@@ -67,8 +67,8 @@ resource "google_iam_workload_identity_pool" "pool" {
 }
 
 
-resource "google_iam_workload_identity_pool" "terraform_pool" {
-  workload_identity_pool_id = "terraform-pool"
+resource "google_iam_workload_identity_pool" "tf" {
+  workload_identity_pool_id = "tf-pool"
   display_name              = "Terraform access"
   project                   = module.project.id
 
@@ -78,12 +78,12 @@ resource "google_iam_workload_identity_pool" "terraform_pool" {
   }
 }
 
-resource "google_iam_workload_identity_pool_provider" "main" {
-  workload_identity_pool_id          = google_iam_workload_identity_pool.pool.workload_identity_pool_id
-  workload_identity_pool_provider_id = "github-actions"
+resource "google_iam_workload_identity_pool_provider" "gh" {
+  workload_identity_pool_id          = google_iam_workload_identity_pool.gh.workload_identity_pool_id
+  workload_identity_pool_provider_id = "gh-actions"
   project                            = module.project.id
-  display_name                       = "Github actions"
-  description                        = "GitHub Actions identity pool provider for automated test"
+  display_name                       = "Github Actions"
+  description                        = "GitHub Actions identity pool provider for automated test."
   attribute_mapping = {
     "google.subject"       = "assertion.sub"
     "attribute.actor"      = "assertion.actor"
@@ -97,11 +97,11 @@ resource "google_iam_workload_identity_pool_provider" "main" {
   }
 }
 
-resource "google_iam_workload_identity_pool_provider" "terraform" {
-  workload_identity_pool_id          = google_iam_workload_identity_pool.terraform_pool.workload_identity_pool_id
-  workload_identity_pool_provider_id = "terraform"
+resource "google_iam_workload_identity_pool_provider" "tf" {
+  workload_identity_pool_id          = google_iam_workload_identity_pool.tf.workload_identity_pool_id
+  workload_identity_pool_provider_id = "terrafor"
   project                            = module.project.id
-  display_name                       = "Terraform"
+  display_name                       = "TERRAFORM"
   attribute_mapping = {
     "google.subject"       = "assertion.sub"
     "attribute.actor"      = "assertion.actor"
