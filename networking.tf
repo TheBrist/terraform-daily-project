@@ -41,21 +41,23 @@ module "firewall" {
 module "addresses" {
   source     = "./modules/net-address"
   project_id = module.project.id
-  external_addresses = {
+  global_addresses = {
     "elb" = {
-      region = var.region
-      tier   = "STANDARD"
     }
   }
 }
 
 module "external-lb" {
-  source     = "./modules/net-lb-app-ext-regional"
+  source     = "./modules/net-lb-app-ext"
   project_id = module.project.id
   name       = "external-lb"
-  vpc        = module.vpc.self_link
-  region     = var.region
-  address    = module.addresses.external_addresses["elb"].id
+  forwarding_rules_config = {
+    "" = {
+      address = (
+        module.addresses.global_addresses["elb"].address
+      )
+    }
+  }
   backend_service_configs = {
     frontend = {
       backends = [
@@ -63,6 +65,11 @@ module "external-lb" {
       ]
       health_checks        = []
       health_check_configs = {}
+      port_name            = "http"
+      iap_config = {
+        oauth2_client_id     = data.google_secret_manager_secret_version.iap_client_id.secret_data
+        oauth2_client_secret = data.google_secret_manager_secret_version.iap_client_secret.secret_data
+      }
     }
     backend = {
       backends = [
@@ -70,7 +77,11 @@ module "external-lb" {
       ]
       health_checks        = []
       health_check_configs = {}
-
+      port_name            = "http"
+      iap_config = {
+        oauth2_client_id     = data.google_secret_manager_secret_version.iap_client_id.secret_data
+        oauth2_client_secret = data.google_secret_manager_secret_version.iap_client_secret.secret_data
+      }
     }
   }
 
@@ -118,13 +129,14 @@ module "external-lb" {
     ]
   }
 
-  # ssl_certificates = {
-  #   create_configs = {
-  #     external-lba = {
-  #       certificate = tls_self_signed_cert.default.cert_pem
-  #       private_key = tls_private_key.default.private_key_pem
-  #     }
-  # } }
+  protocol = "HTTPS"
+  ssl_certificates = {
+    managed_configs = {
+      default = {
+        domains = ["fentanyl.ondutyschedulers.com"]
+      }
+    }
+  }
 }
 
 resource "google_compute_region_security_policy" "israel_only_policy" {
@@ -155,4 +167,14 @@ resource "google_compute_region_security_policy" "israel_only_policy" {
     }
     description = "Deny all other traffic (default rule)"
   }
+}
+
+data "google_secret_manager_secret_version" "iap_client_id" {
+  secret  = "iap-client-id"
+  project = module.project.id
+}
+
+data "google_secret_manager_secret_version" "iap_client_secret" {
+  secret  = "iap-client-secret"
+  project = module.project.id
 }
