@@ -6,6 +6,12 @@ module "github_sa" {
 
   iam_folder_roles = {
     "${module.project_folder.id}" = [
+      "roles/resourcemanager.folderIamAdmin",
+    ]
+  }
+
+  iam_project_roles = {
+    "${module.project_folder.id}" = [
       "roles/owner",
       "roles/appengine.appAdmin",
       "roles/run.admin"
@@ -53,6 +59,11 @@ resource "google_iam_workload_identity_pool" "pool" {
   workload_identity_pool_id = "cloudrun-access"
   display_name              = "Cloud run access"
   project                   = module.project.id
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes  = [display_name]
+  }
 }
 
 
@@ -60,6 +71,11 @@ resource "google_iam_workload_identity_pool" "terraform_pool" {
   workload_identity_pool_id = "terraform-pool"
   display_name              = "Terraform access"
   project                   = module.project.id
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes  = [display_name]
+  }
 }
 
 resource "google_iam_workload_identity_pool_provider" "main" {
