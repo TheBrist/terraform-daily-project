@@ -5,7 +5,7 @@ module "github_sa" {
   display_name = "Github Runner Service Account"
 
   iam_folder_roles = {
-    "${module.project.id}" = [
+    "${module.project_folder.id}" = [
       "roles/owner",
       "roles/appengine.appAdmin",
       "roles/run.admin"
