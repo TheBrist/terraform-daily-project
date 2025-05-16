@@ -4,14 +4,8 @@ module "github_sa" {
   name         = "gh-runner"
   display_name = "Github Runner Service Account"
 
-  iam_folder_roles = {
-    "${module.project_folder.id}" = [
-      "roles/resourcemanager.folderIamAdmin",
-    ]
-  }
-
   iam_project_roles = {
-    "${module.project_folder.id}" = [
+    "${module.project.id}" = [
       "roles/owner",
       "roles/appengine.appAdmin",
       "roles/run.admin"
