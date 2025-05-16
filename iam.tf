@@ -99,7 +99,7 @@ resource "google_iam_workload_identity_pool_provider" "gh" {
 
 resource "google_iam_workload_identity_pool_provider" "tf" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.tf.workload_identity_pool_id
-  workload_identity_pool_provider_id = "terrafor"
+  workload_identity_pool_provider_id = "terraform"
   project                            = module.project.id
   display_name                       = "TERRAFORM"
   attribute_mapping = {
