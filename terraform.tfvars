@@ -28,3 +28,7 @@ subnets = [
 ]
 cloud_sql_cidr_range = "10.60.0.0/16"
 elb_cidr_range       = "10.20.0.0/24"
+db_name = "daily-dashboard"
+database = "postgres"
+db_password = "postgres"
+db_user = "postgres"

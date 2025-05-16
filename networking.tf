@@ -150,7 +150,7 @@ resource "google_compute_region_security_policy" "israel_only_policy" {
     priority = 1000
     match {
       expr {
-        expression = "origin.region_code=='AU'"
+        expression = "origin.region_code=='IL'"
       }
     }
     description = "Allow only requests from Israel"

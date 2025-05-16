@@ -47,3 +47,19 @@ variable "cloud_sql_cidr_range" {
 variable "elb_cidr_range" {
   type = string
 }
+
+variable "db_name" {
+  type = string
+}
+
+variable "db_user" {
+  type = string
+}
+
+variable "db_password" {
+  type = string
+}
+
+variable "database" {
+  type = string
+}

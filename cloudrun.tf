@@ -8,9 +8,9 @@ module "backend_cloud_run" {
     backend-api = {
       image = "${var.region}-docker.pkg.dev/${module.project.id}/${module.back_registry.name}/backend:latest"
       env = {
-        "DB_USER"     = "postgres",
-        "DB_PASSWORD" = "postgres",
-        "DATABASE"    = "postgres",
+        "DB_USER"     = var.db_user,
+        "DB_PASSWORD" = var.db_password,
+        "DATABASE"    = var.database,
         "DB_PORT"     = 5432
         "DB_HOST"     = module.db.ip
         "JWT_SECRET"  = data.google_secret_manager_secret_version.jwt_secret.secret_data

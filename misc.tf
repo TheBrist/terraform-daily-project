@@ -35,7 +35,7 @@ module "db" {
     }
   }
 
-  name                          = "daily-dashboard"
+  name                          = var.db_name
   region                        = var.region
   database_version              = "POSTGRES_13"
   tier                          = "db-g1-small"
