@@ -50,7 +50,7 @@ module "cloud_run_back_sa" {
 }
 
 resource "google_iam_workload_identity_pool" "gh" {
-  workload_identity_pool_id = "cr-access"
+  workload_identity_pool_id = "cloudrun"
   display_name              = "Cloud run access"
   project                   = module.project.id
 
@@ -62,7 +62,7 @@ resource "google_iam_workload_identity_pool" "gh" {
 
 
 resource "google_iam_workload_identity_pool" "tf" {
-  workload_identity_pool_id = "tf-pool"
+  workload_identity_pool_id = "tfpool"
   display_name              = "Terraform access"
   project                   = module.project.id
 
@@ -74,7 +74,7 @@ resource "google_iam_workload_identity_pool" "tf" {
 
 resource "google_iam_workload_identity_pool_provider" "gh" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.gh.workload_identity_pool_id
-  workload_identity_pool_provider_id = "gh-actions"
+  workload_identity_pool_provider_id = "ghpool"
   project                            = module.project.id
   display_name                       = "Github Actions"
   description                        = "GitHub Actions identity pool provider for automated test."
@@ -93,7 +93,7 @@ resource "google_iam_workload_identity_pool_provider" "gh" {
 
 resource "google_iam_workload_identity_pool_provider" "tf" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.tf.workload_identity_pool_id
-  workload_identity_pool_provider_id = "terraform"
+  workload_identity_pool_provider_id = "tfpool"
   project                            = module.project.id
   display_name                       = "TERRAFORM"
   attribute_mapping = {
