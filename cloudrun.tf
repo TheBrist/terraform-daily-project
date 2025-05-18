@@ -52,6 +52,7 @@ module "frontend_cloud_run" {
       image = "${var.region}-docker.pkg.dev/${module.project.id}/${module.front_registry.name}/frontend:latest"
       env = {
         "VITE_API_BASE" = module.backend_cloud_run.service_name
+        "TEST" = "test"
       }
     }
   }
