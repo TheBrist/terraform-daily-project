@@ -2,6 +2,7 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   build-infra:
     name: terraform-ci-cd
@@ -24,9 +25,13 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate
-      - name: Terraform Apply
-        id: apply
-        run: terraform apply --auto-approve
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -no-color > plan.txt
+          cat plan.txt
+
+      - name: Comment Plan on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: plan.txt
