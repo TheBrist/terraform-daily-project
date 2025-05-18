@@ -1,3 +1,4 @@
+name: terraform-plan-check
 on:
   pull_request:
     branches:
