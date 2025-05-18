@@ -25,6 +25,10 @@ subnets = [
     ip_cidr_range = "10.10.10.0/26"
     name          = "backend-cloudrun"
   },
+  {
+    ip_cidr_range = "10.11.10.0/24"
+    name = "vm"
+  }
 ]
 cloud_sql_cidr_range = "10.60.0.0/16"
 elb_cidr_range       = "10.20.0.0/24"
