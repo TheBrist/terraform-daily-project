@@ -4,6 +4,7 @@ module "vm-managed-sa-example2" {
   zone       = "${var.region}-b"
   name       = "github-runner"
 
+  instance_type = "e2-medium"
 
   boot_disk = {
     initialize_params = {
@@ -20,17 +21,6 @@ module "vm-managed-sa-example2" {
 
   tags   = ["github-runner"]
   labels = { role = "github-runner" }
-
-  attached_disks = [{
-    name        = "data1"
-    size        = 10
-    source_type = "image"
-    source      = "image-1"
-    options = {
-      auto_delete  = false
-      replica_zone = "${var.region}-c"
-    }
-  }]
 
   service_account = {
     email  = module.github_sa.email
