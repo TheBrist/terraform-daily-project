@@ -5,7 +5,7 @@ on:
 jobs:
   build-infra:
     name: terraform-ci-cd
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions:
       id-token: write
       contents: read
