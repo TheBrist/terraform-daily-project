@@ -2,14 +2,16 @@ on:
   pull_request:
     branches:
       - main
-
+      
+permissions:
+  pull-requests: write
+  id-token: write
+  contents: read
+  
 jobs:
   build-infra:
     name: terraform-ci-cd
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v3
