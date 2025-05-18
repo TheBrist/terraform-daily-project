@@ -43,6 +43,9 @@ module "addresses" {
   project_id = module.project.id
   global_addresses = {
     "elb" = {
+    },
+    "github-runner" = {
+
     }
   }
 }
