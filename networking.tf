@@ -41,12 +41,14 @@ module "firewall" {
 module "addresses" {
   source     = "./modules/net-address"
   project_id = module.project.id
+  external_addresses = {
+    "github-runner" = {
+      region = var.region
+    }
+  }
   global_addresses = {
     "elb" = {
     },
-    "github-runner" = {
-
-    }
   }
 }
 
