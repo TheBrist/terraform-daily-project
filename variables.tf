@@ -63,3 +63,7 @@ variable "db_password" {
 variable "database" {
   type = string
 }
+
+variable "vm_image" {
+  type = string
+}
