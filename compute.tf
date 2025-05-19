@@ -8,7 +8,7 @@ module "vm-managed-sa-example2" {
 
   boot_disk = {
     initialize_params = {
-      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      image = var.vm_image
       size  = 20
       type  = "pd-standard"
     }
