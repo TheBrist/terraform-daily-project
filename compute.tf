@@ -17,6 +17,8 @@ module "vm-managed-sa-example2" {
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region}/vm"]
+    nat = true
+    addresses  = { external = module.addresses.external_addresses["github-runner"].address}
   }]
 
   tags   = ["github-runner"]
