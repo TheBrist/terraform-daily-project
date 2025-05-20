@@ -9,7 +9,7 @@ module "backend_cloud_run" {
       image = "${var.region}-docker.pkg.dev/${module.project.id}/${module.back_registry.name}/backend:latest"
       env = {
         "DB_USER"     = var.db_user,
-        "DB_PASSWORD" = var.db_password,
+        "DB_PASSWORD" = data.google_secret_manager_secret_version.db_password.secret_data,
         "DATABASE"    = var.database,
         "DB_PORT"     = 5432
         "DB_HOST"     = module.db.ip
@@ -64,5 +64,10 @@ module "frontend_cloud_run" {
 
 data "google_secret_manager_secret_version" "jwt_secret" {
   secret  = "jwt-secret"
+  project = module.project.id
+}
+
+data "google_secret_manager_secret_version" "db_password" {
+  secret = "db-password"
   project = module.project.id
 }
