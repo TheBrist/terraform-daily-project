@@ -1,46 +1,32 @@
 module "front_registry" {
-  source     = "./modules/artifact-registry"
-  project_id = module.project.id
-  location   = var.region
-  name       = "front-repo"
-  format     = { docker = { standard = {} } }
+  source                 = "./modules/artifact-registry"
+  project_id             = module.project.id
+  location               = var.region
+  name                   = "front-repo"
+  format                 = { docker = { standard = {} } }
   cleanup_policy_dry_run = false
   cleanup_policies = {
     keep-5-versions = {
       action = "KEEP"
       most_recent_versions = {
-        keep_count            = 5
-      }
-    }
-    keep-tagged-release = {
-      action = "KEEP"
-      condition = {
-        tag_state             = "TAGGED"
-        tag_prefixes          = ["release"]
+        keep_count = 5
       }
     }
   }
 }
 
 module "back_registry" {
-  source     = "./modules/artifact-registry"
-  project_id = module.project.id
-  location   = var.region
-  name       = "back-repo"
-  format     = { docker = { standard = {} } }
+  source                 = "./modules/artifact-registry"
+  project_id             = module.project.id
+  location               = var.region
+  name                   = "back-repo"
+  format                 = { docker = { standard = {} } }
   cleanup_policy_dry_run = false
   cleanup_policies = {
     keep-5-versions = {
       action = "KEEP"
       most_recent_versions = {
-        keep_count            = 5
-      }
-    }
-    keep-tagged-release = {
-      action = "KEEP"
-      condition = {
-        tag_state             = "TAGGED"
-        tag_prefixes          = ["release"]
+        keep_count = 5
       }
     }
   }
