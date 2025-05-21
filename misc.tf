@@ -44,21 +44,27 @@ module "db" {
 }
 
 module "secret_manager" {
-  source = "./modules/secret-manager"
+  source     = "./modules/secret-manager"
   project_id = module.project.id
   secrets = {
     jwt-secret = {
       locations = [var.region]
     }
+    db-password = {
+      locations = [var.region]
+    }
   }
   versions = {
     jwt-secret = {
-      v1 = {enabled = true, data = random_string.jwt_secret.result}
+      v1 = { enabled = true, data = random_string.jwt_secret.result }
+    }
+    db-password = {
+      v1 = { enabled = true, data = var.db_password }
     }
   }
 }
 
 resource "random_string" "jwt_secret" {
-  length           = 16
-  special          = true
+  length  = 16
+  special = true
 }

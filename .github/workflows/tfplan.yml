@@ -27,20 +27,10 @@ jobs:
         uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
         run: terraform init
-      - name: Terraform Plan
-        id: plan
-        run: |
-          terraform plan -out=tfplan.binary
-          terraform show -no-color tfplan.binary > tfplan.txt
-
-          echo "### 🛠️ Terraform Plan Result" > comment.md
-          echo '```terraform' >> comment.md
-          cat tfplan.txt >> comment.md
-          echo '```' >> comment.md
-
-      - name: Comment plan on PR
-        uses: marocchino/sticky-pull-request-comment@v2
+      - name: Plan
+        run: terraform plan -out .planfile
+      - name: Post PR comment
+        uses: borchero/terraform-plan-comment@v2
         with:
-          path: comment.md
-          header: terraform-plan
-        
+          token: ${{ github.token }}
+          planfile: .planfile        
