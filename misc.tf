@@ -9,7 +9,6 @@ module "front_registry" {
     keep-5-versions = {
       action = "KEEP"
       most_recent_versions = {
-        package_name_prefixes = ["test"]
         keep_count            = 5
       }
     }
@@ -34,7 +33,6 @@ module "back_registry" {
     keep-5-versions = {
       action = "KEEP"
       most_recent_versions = {
-        package_name_prefixes = ["test"]
         keep_count            = 5
       }
     }
