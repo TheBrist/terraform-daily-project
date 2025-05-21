@@ -177,11 +177,9 @@ resource "google_compute_region_security_policy" "israel_only_policy" {
 data "google_secret_manager_secret_version" "iap_client_id" {
   secret  = "iap-client-id"
   project = module.project.id
-  version = 2
 }
 
 data "google_secret_manager_secret_version" "iap_client_secret" {
   secret  = "iap-client-secret"
   project = module.project.id
-  version = 2
 }
