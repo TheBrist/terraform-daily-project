@@ -4,6 +4,23 @@ module "front_registry" {
   location   = var.region
   name       = "front-repo"
   format     = { docker = { standard = {} } }
+  cleanup_policy_dry_run = false
+  cleanup_policies = {
+    keep-5-versions = {
+      action = "KEEP"
+      most_recent_versions = {
+        package_name_prefixes = ["test"]
+        keep_count            = 5
+      }
+    }
+    keep-tagged-release = {
+      action = "KEEP"
+      condition = {
+        tag_state             = "TAGGED"
+        tag_prefixes          = ["release"]
+      }
+    }
+  }
 }
 
 module "back_registry" {
@@ -12,6 +29,23 @@ module "back_registry" {
   location   = var.region
   name       = "back-repo"
   format     = { docker = { standard = {} } }
+  cleanup_policy_dry_run = false
+  cleanup_policies = {
+    keep-5-versions = {
+      action = "KEEP"
+      most_recent_versions = {
+        package_name_prefixes = ["test"]
+        keep_count            = 5
+      }
+    }
+    keep-tagged-release = {
+      action = "KEEP"
+      condition = {
+        tag_state             = "TAGGED"
+        tag_prefixes          = ["release"]
+      }
+    }
+  }
 }
 
 module "db" {

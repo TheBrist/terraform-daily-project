@@ -22,15 +22,23 @@ jobs:
         with:
           token_format: 'access_token'
           workload_identity_provider: ${{ vars.WIF_PROVIDER }}
-          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
         run: terraform init
-      - name: Plan
-        run: terraform plan -out .planfile
-      - name: Post PR comment
-        uses: borchero/terraform-plan-comment@v2
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -no-color > tfplan.txt
+
+          echo "### 🛠️ Terraform Plan Result" > comment.md
+          echo '```terraform' >> comment.md
+          cat tfplan.txt >> comment.md
+          echo '```' >> comment.md
+
+      - name: Comment plan on PR
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
-          token: ${{ github.token }}
-          planfile: .planfile        
+          path: comment.md
+          header: terraform-plan
