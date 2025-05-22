@@ -4,8 +4,14 @@ module "front_registry" {
   location               = var.region
   name                   = "front-repo"
   format                 = { docker = { standard = {} } }
-  cleanup_policy_dry_run = false
+  cleanup_policy_dry_run = true
   cleanup_policies = {
+    DELETE-OLDER-1D = {
+      action = "DELETE"
+      condition = {
+        older_than = "1d"
+      }
+    }
     keep-5-versions = {
       action = "KEEP"
       most_recent_versions = {
@@ -21,8 +27,14 @@ module "back_registry" {
   location               = var.region
   name                   = "back-repo"
   format                 = { docker = { standard = {} } }
-  cleanup_policy_dry_run = false
+  cleanup_policy_dry_run = true
   cleanup_policies = {
+    DELETE-OLDER-1D = {
+      action = "DELETE"
+      condition = {
+        older_than = "1d"
+      }
+    }
     keep-5-versions = {
       action = "KEEP"
       most_recent_versions = {
