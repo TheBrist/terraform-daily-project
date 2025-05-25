@@ -42,4 +42,3 @@ jobs:
         with:
           path: comment.md
           header: terraform-plan
-        

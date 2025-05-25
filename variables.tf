@@ -58,6 +58,7 @@ variable "db_user" {
 
 variable "db_password" {
   type = string
+  sensitive = true
 }
 
 variable "database" {
@@ -65,5 +66,9 @@ variable "database" {
 }
 
 variable "vm_image" {
+  type = string
+}
+
+variable "org_id" {
   type = string
 }
