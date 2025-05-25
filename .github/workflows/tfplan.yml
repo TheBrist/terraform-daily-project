@@ -28,15 +28,16 @@ jobs:
       - name: Terraform Init
         run: terraform init
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
-      - name: Render Plan to Markdown
+        id: plan
         run: |
-          terraform show -no-color tfplan > plan.txt
-          printf 'terraform\n%s\n' "$(cat plan.txt)" > plan.md
+          terraform plan -no-color > tfplan.txt
+          echo "### 🛠️ Terraform Plan Result" > comment.md
+          echo '```terraform' >> comment.md
+          cat tfplan.txt >> comment.md
+          echo '```' >> comment.md
 
-      - name: Comment Plan on PR
-        uses: peter-evans/create-or-update-comment@v4
+      - name: Comment plan on PR
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
-          token:        ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body-file:    ./plan.md
+          path: comment.md
+          header: terraform-plan
