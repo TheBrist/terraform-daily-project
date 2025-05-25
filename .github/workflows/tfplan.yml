@@ -10,14 +10,9 @@ permissions:
   contents: read
   
 jobs:
-  terraform:
-    name: Terraform Plan
+  build-infra:
+    name: terraform-ci-cd
     runs-on: ubuntu-latest
-
-    permissions:
-      pull-requests: write
-      contents: read
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -28,10 +23,8 @@ jobs:
           token_format: 'access_token'
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
           service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
-
       - name: Terraform Init
         run: terraform init
       - name: Terraform plan
