@@ -17,7 +17,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           token_format: 'access_token'
-          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
           service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
