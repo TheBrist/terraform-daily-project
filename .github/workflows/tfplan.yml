@@ -31,7 +31,6 @@ jobs:
         id: plan
         run: |
           terraform plan -no-color > tfplan.txt
-
           echo "### 🛠️ Terraform Plan Result" > comment.md
           echo '```terraform' >> comment.md
           cat tfplan.txt >> comment.md
