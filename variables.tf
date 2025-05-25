@@ -68,3 +68,7 @@ variable "database" {
 variable "vm_image" {
   type = string
 }
+
+variable "org_id" {
+  type = string
+}

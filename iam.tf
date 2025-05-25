@@ -108,3 +108,25 @@ resource "google_iam_workload_identity_pool_provider" "tf" {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }
 }
+
+# resource "google_organization_policy" "enable_lb_policy" {
+#   org_id = var.org_id
+#   constraint = "compute.restrictLoadBalancerCreationForTypes"
+
+#   list_policy {
+#     allow {
+#       all = true
+#     }
+#   }
+# }
+
+# resource "google_organization_policy" "enabl_wif_policy" {
+#   org_id = var.org_id
+#   constraint = "iam.workloadIdentityPoolProviders"
+
+#    list_policy {
+#     allow {
+#       all = true
+#     }
+#   }
+# }
