@@ -27,16 +27,14 @@ jobs:
         uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
         run: terraform init
-      - name: Terraform plan
-        run: terraform plan -out .planfile
-      - name: Create comment
+      - name: Render Plan to Markdown
+        run: |
+          terraform show -no-color tfplan > plan.txt
+          printf 'terraform\n%s\n' "$(cat plan.txt)" > plan.md
+
+      - name: Comment Plan on PR
         uses: peter-evans/create-or-update-comment@v4
         with:
-          issue-number: 1
-          body: |
-            This is a multi-line test comment
-            - With GitHub **Markdown** :sparkles:
-            - Created by [create-or-update-comment][1]
-
-            [1]: https://github.com/peter-evans/create-or-update-comment
-          reactions: '+1'
+          token:        ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-file:    ./plan.md
