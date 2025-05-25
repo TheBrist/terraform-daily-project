@@ -29,10 +29,14 @@ jobs:
         run: terraform init
       - name: Terraform plan
         run: terraform plan -out .planfile
-      - name: Post PR comment
-        uses: borchero/terraform-plan-comment@v2
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v4
         with:
-          token: ${{ github.token }}
-          planfile: .planfile
-          header: 📝 Terraform Plan
+          issue-number: 1
+          body: |
+            This is a multi-line test comment
+            - With GitHub **Markdown** :sparkles:
+            - Created by [create-or-update-comment][1]
 
+            [1]: https://github.com/peter-evans/create-or-update-comment
+          reactions: '+1'
