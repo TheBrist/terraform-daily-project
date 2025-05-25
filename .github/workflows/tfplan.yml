@@ -23,23 +23,31 @@ jobs:
           token_format: 'access_token'
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
           service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-      - name: Terraform Init
-        run: terraform init
-      - name: Terraform Init (Upgrade)
+      
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_wrapper: false
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_wrapper: false
+      - name: Tofu Init Upgrade
         run: tofu init -upgrade
-      - name: Terraform Plan
+      - name: Tofu Plan
         id: plan
         run: |
-          terraform plan > tfplan.txt
-          echo "### 🛠️ Terraform Plan Result" > comment.md
+          tofu plan > tfplan.txt
+          echo "### 🛠️ OpenTofu Plan Result" > comment.md
           echo '```terraform' >> comment.md
           cat tfplan.txt >> comment.md
           echo '```' >> comment.md
 
-      - name: Comment plan on PR
-        uses: marocchino/sticky-pull-request-comment@v2
+      - name: Create planfile
+        run: tofu plan -no-color -out=./.planfile
+    
+      - name: Convert planfile to JSON planfile
+        run: tofu show -json ./.planfile >> ./my-planfile.json
+    
+      - name: Create PR comment
+        uses: liatrio/terraform-change-pr-commenter@v1.4.0
         with:
-          path: comment.md
-          header: terraform-plan
+          json-file: my-planfile.json
