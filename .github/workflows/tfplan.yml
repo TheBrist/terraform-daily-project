@@ -32,6 +32,16 @@ jobs:
       - uses: opentofu/setup-opentofu@v1
         with:
           tofu_wrapper: false
+      - name: Terraform Init (Upgrade)
+        run: tofu init -upgrade
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan > tfplan.txt
+          echo "### 🛠️ Terraform Plan Result" > comment.md
+          echo '```terraform' >> comment.md
+          cat tfplan.txt >> comment.md
+          echo '```' >> comment.md
 
       - name: Create planfile
         run: tofu plan -no-color -out=./.planfile
