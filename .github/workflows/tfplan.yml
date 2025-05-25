@@ -25,20 +25,21 @@ jobs:
           service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
       - name: Terraform Init
         run: terraform init
-      - name: Terraform Plan
-        id: plan
-        run: |
-
-          terraform plan > tfplan.txt
-          echo "### 🛠️ Terraform Plan Result" > comment.md
-          echo '```terraform' >> comment.md
-          cat tfplan.txt >> comment.md
-          echo '```' >> comment.md
-
-      - name: Comment plan on PR
-        uses: marocchino/sticky-pull-request-comment@v2
+      - uses: opentofu/setup-opentofu@v1
         with:
-          path: comment.md
-          header: terraform-plan
+          tofu_wrapper: false
+
+      - name: Create planfile
+        run: tofu plan -no-color -out=./.planfile
+    
+      - name: Convert planfile to JSON planfile
+        run: tofu show -json ./.planfile >> ./my-planfile.json
+    
+      - name: Create PR comment
+        uses: liatrio/terraform-change-pr-commenter@v1.4.0
+        with:
+          json-file: my-planfile.json
